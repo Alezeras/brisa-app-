@@ -14,24 +14,50 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { z } from 'zod'; 
 
-import { useSettings } from '../context/ConfigContext'; 
+import { useAppStore } from '../store/useAppStore'; 
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Por favor, digite um e-mail válido."),
+});
+
+type ValidationErrors = {
+  email?: string;
+};
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
 
-  const { darkMode, fontSize } = useSettings(); 
+  const { darkMode, fontSize } = useAppStore(); 
 
   async function handleReset() {
-    if (!email) {
-      Alert.alert("Atenção", "Por favor, digite seu email.");
+    setErrors({}); 
+
+    const result = forgotPasswordSchema.safeParse({ email });
+
+    if (!result.success) {
+      const formattedErrors: ValidationErrors = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) {
+          formattedErrors[err.path[0] as keyof ValidationErrors] = err.message;
+        }
+      });
+      setErrors(formattedErrors);
       return;
     }
+
     setLoading(true);
+
     setTimeout(() => {
         setLoading(false);
-        Alert.alert("Email Enviado", "Verifique sua caixa de entrada.", [{ text: "OK", onPress: () => router.back() }]);
+        Alert.alert(
+            "Email Enviado", 
+            "Verifique sua caixa de entrada para redefinir a senha.", 
+            [{ text: "OK", onPress: () => router.back() }]
+        );
     }, 1500);
   }
 
@@ -64,7 +90,12 @@ export default function ForgotPasswordScreen() {
               
               <Text style={[styles.label, darkMode && styles.textDark, { fontSize: fontSize }]}>Email</Text>
               <TextInput 
-                style={[styles.input, darkMode && styles.inputDark, { fontSize: fontSize + 2 }]}
+                style={[
+                    styles.input, 
+                    darkMode && styles.inputDark, 
+                    { fontSize: fontSize + 2 },
+                    errors.email && styles.inputError 
+                ]}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -72,6 +103,7 @@ export default function ForgotPasswordScreen() {
                 placeholder="seu@email.com"
                 placeholderTextColor={darkMode ? "#ccc" : "#999"}
               />
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
               <TouchableOpacity style={styles.actionButton} onPress={handleReset} disabled={loading}>
                 {loading ? (
@@ -113,19 +145,29 @@ const styles = StyleSheet.create({
   headerButtonContainer: { position: 'absolute', top: 20, left: 25, zIndex: 10 },
   backButton: { width: 40, height: 40, backgroundColor: '#FFFFFF', borderRadius: 20, justifyContent: 'center', alignItems: 'center', elevation: 3 },
   card: { width: 330, paddingVertical: 40, backgroundColor: '#FFFFFF', borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', elevation: 5, marginBottom: 30 },
+  
   logoContainer: { marginBottom: 20, alignItems: 'center', height: 65, justifyContent: 'center' },
+  
   title: { fontSize: 20, fontWeight: 'bold', color: '#4A5565', marginBottom: 10 },
   instruction: { color: '#4A5565', textAlign: 'center', marginBottom: 30, width: 235 },
+  
   formContainer: { width: '100%', alignItems: 'center' },
   label: { width: 235, color: '#4A5565', marginBottom: 6, textAlign: 'left' },
-  input: { width: 235, height: 45, backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#193CB8', borderRadius: 12, paddingHorizontal: 15, marginBottom: 20, color: '#333' },
-  actionButton: { width: 235, height: 45, backgroundColor: '#193CB8', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 25 },
+  
+  input: { width: 235, height: 45, backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#193CB8', borderRadius: 12, paddingHorizontal: 15, marginBottom: 5, color: '#333' },
+  inputError: { borderColor: '#EF4444' },
+  errorText: { width: 235, color: '#EF4444', fontSize: 12, marginBottom: 15, textAlign: 'left' },
+
+  actionButton: { width: 235, height: 45, backgroundColor: '#193CB8', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 25, marginTop: 10 },
   buttonContentContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   buttonText: { color: '#FFFFFF', fontWeight: '500' },
+  
   registerLink: { color: '#4A5565' },
   registerBold: { fontWeight: 'bold', color: '#4A5565' },
+  
   footerLink: { position: 'absolute', bottom: 30, alignSelf: 'center' },
   footerText: { color: '#4A5565', fontWeight: '500' },
+
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E' },
   textDark: { color: '#E0E0E0' },

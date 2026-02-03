@@ -8,28 +8,48 @@ import {
   TouchableOpacity, 
   Platform, 
   Modal, 
-  Alert 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
-import { useSettings } from '../context/ConfigContext';
+
+import { useAppStore } from '../store/useAppStore';
+
+const formatTime = (totalSeconds: number) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
 
 export default function Dashboard() {
   const { 
-    darkMode, fontSize, 
-    activities, isRunning, timerSeconds, toggleTimer, formatTime, getTotalSeconds,
+    darkMode, 
+    fontSize, 
+    activities, 
+    isRunning, 
+    timerSeconds, 
+    startTimer,
+    stopTimer,
     logout 
-  } = useSettings();
+  } = useAppStore();
   
   const [menuVisible, setMenuVisible] = useState(false);
 
+  const totalSeconds = activities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+
+  const handleToggleTimer = () => {
+    if (isRunning) {
+      stopTimer();
+    } else {
+      startTimer();
+    }
+  };
+
   const handleLogout = () => {
     setMenuVisible(false);
-    
     logout(); 
-
     setTimeout(() => {
-        router.replace('/');
+        router.replace('/login');
     }, 100);
   };
 
@@ -52,12 +72,13 @@ export default function Dashboard() {
                 <Feather name="bar-chart-2" size={18} color={darkMode ? "#FFF" : "#4A5565"} style={styles.menuIcon} />
                 <Text style={[styles.menuText, darkMode && styles.textDark, { fontSize: fontSize }]}>Relatórios</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); router.push('/config-login'); }}>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); router.push('/config'); }}>
                 <Feather name="settings" size={18} color={darkMode ? "#FFF" : "#4A5565"} style={styles.menuIcon} />
                 <Text style={[styles.menuText, darkMode && styles.textDark, { fontSize: fontSize }]}>Configurações</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); router.push('/login'); }}>
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
                 <Feather name="log-out" size={18} color="#EF4444" style={styles.menuIcon} />
                 <Text style={[styles.menuText, { color: '#EF4444', fontSize: fontSize }]}>Sair</Text>
             </TouchableOpacity>
@@ -75,7 +96,7 @@ export default function Dashboard() {
             {isRunning ? "Cronômetro Ativo" : "Total Acumulado"}
           </Text>
           <Text style={[styles.bigTimer, darkMode && styles.textDark, isRunning && { color: '#193CB8', fontWeight: 'bold' }]}>
-            {isRunning ? formatTime(timerSeconds) : formatTime(getTotalSeconds())}
+            {isRunning ? formatTime(timerSeconds) : formatTime(totalSeconds)}
           </Text>
         </View>
 
@@ -103,7 +124,7 @@ export default function Dashboard() {
 
                 <View style={styles.cardBodyRow}>
                 <View style={styles.leftInfo}>
-                    <View style={styles.blueDot} />
+                    <View style={[styles.blueDot, item.color ? { backgroundColor: item.color } : {}]} />
                     <View>
                     <Text style={[styles.activityTitle, darkMode && styles.textDarkGray, { fontSize: fontSize - 2 }]}>
                         {item.title}
@@ -137,25 +158,25 @@ export default function Dashboard() {
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/calendario')}>
-          <Feather name="calendar" size={24} color="#4A5565" style={darkMode && styles.textDark} />
+          <Feather name="calendar" size={24} color="#4A5565" style={darkMode ? styles.textDark : {}} />
           <Text style={[styles.tabLabel, darkMode && styles.textDark]}>Agendamentos</Text>
         </TouchableOpacity>
         
         <View style={{ width: 60 }} /> 
         
         <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/clientes')}>
-          <Feather name="users" size={24} color="#4A5565" style={darkMode && styles.textDark} />
+          <Feather name="users" size={24} color="#4A5565" style={darkMode ? styles.textDark : {}} />
           <Text style={[styles.tabLabel, darkMode && styles.textDark]}>Clientes</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.tabItem} onPress={() => router.push('/perfil')}>
-          <Feather name="user" size={24} color="#4A5565" style={darkMode && styles.textDark} />
+          <Feather name="user" size={24} color="#4A5565" style={darkMode ? styles.textDark : {}} />
           <Text style={[styles.tabLabel, darkMode && styles.textDark]}>Perfil</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
             style={[styles.bigPlayButton, isRunning && { backgroundColor: '#EF4444' }]} 
-            onPress={toggleTimer}
+            onPress={handleToggleTimer}
         >
           {isRunning ? (
              <Ionicons name="square" size={24} color="#FFFFFF" />
@@ -194,6 +215,7 @@ const styles = StyleSheet.create({
   timeRange: { fontSize: 12, fontWeight: '300', color: '#5C6265' },
   rightActions: { flexDirection: 'row', alignItems: 'center' },
   smallPlayButton: { marginRight: 15 },
+  optionsButton: {},
   bottomBar: { position: 'absolute', bottom: 0, width: '100%', height: 80, backgroundColor: '#FFFFFF', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.05)', elevation: 10 },
   tabItem: { flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%' },
   tabLabel: { fontSize: 10, color: '#4A5565', marginTop: 4, textAlign: 'center', width: '100%' },

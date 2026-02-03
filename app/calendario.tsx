@@ -1,16 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions, Platform 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useSettings } from '../context/ConfigContext';
 
-const { width } = Dimensions.get('window');
+import { useAppStore } from '../store/useAppStore';
+
+interface DayObject {
+  d: number;
+  m: number;
+  y: number;
+  prev?: boolean;
+  next?: boolean;
+  curr?: boolean;
+}
 
 export default function CalendarScreen() {
-  const { darkMode, activities, getTotalSeconds, formatTime } = useSettings();
+  const { darkMode, activities, timerSeconds, activities: allActivities } = useAppStore();
   
+  const getTotalSeconds = () => allActivities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+  
+  const formatTime = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
   const [displayDate, setDisplayDate] = useState(new Date());
 
   const holidays = [
@@ -24,14 +41,14 @@ export default function CalendarScreen() {
     { d: 25, m: 11, name: 'Natal' }
   ];
 
-  const generateCalendarDays = (date) => {
+  const generateCalendarDays = (date: Date): DayObject[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDayOfWeek = new Date(year, month, 1).getDay();
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
     const lastDayOfPrevMonth = new Date(year, month, 0).getDate();
 
-    const daysArray = [];
+    const daysArray: DayObject[] = [];
 
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
         daysArray.push({ d: lastDayOfPrevMonth - i, m: month - 1, y: year, prev: true });
@@ -48,19 +65,19 @@ export default function CalendarScreen() {
 
   const calendarData = generateCalendarDays(displayDate);
 
-  const changeMonth = (increment) => {
+  const changeMonth = (increment: number) => {
     const newDate = new Date(displayDate.getFullYear(), displayDate.getMonth() + increment, 1);
     setDisplayDate(newDate);
   };
 
   const monthTitle = displayDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
-  const getHoliday = (dayObj) => {
-    const checkDate = new Date(dayObj.y, dayObj.m, dayObj.d);
-    return holidays.find(h => h.d === checkDate.getDate() && h.m === checkDate.getMonth());
+  const getHoliday = (dayObj: DayObject) => {
+    const tempDate = new Date(dayObj.y, dayObj.m, dayObj.d);
+    return holidays.find(h => h.d === tempDate.getDate() && h.m === tempDate.getMonth());
   };
 
-  const getEventsForDay = (dayObj) => {
+  const getEventsForDay = (dayObj: DayObject) => {
     const tempDate = new Date(dayObj.y, dayObj.m, dayObj.d);
     
     const day = String(tempDate.getDate()).padStart(2, '0'); 
@@ -123,13 +140,13 @@ export default function CalendarScreen() {
                         <View key={index} style={[
                             styles.dayCell, 
                             darkMode && styles.dayCellDark, 
-                            holiday && !isFaded && { backgroundColor: darkMode ? '#331111' : '#FFF5F5' }
+                            (holiday && !isFaded) ? { backgroundColor: darkMode ? '#331111' : '#FFF5F5' } : {}
                         ]}>
                             <Text style={[
                                 styles.dayNumber, 
                                 isFaded && styles.dayNumberFade,
                                 darkMode && styles.textDark,
-                                (holiday && !isFaded) && { color: '#EF4444', fontWeight: 'bold' }
+                                (holiday && !isFaded) ? { color: '#EF4444', fontWeight: 'bold' } : {}
                             ]}>
                                 {dayObj.d}
                             </Text>

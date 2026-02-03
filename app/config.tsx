@@ -1,16 +1,27 @@
 import React from 'react';
 import { 
-  View, Text, Switch, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform 
+  View, 
+  Text, 
+  Switch, 
+  StyleSheet, 
+  SafeAreaView, 
+  TouchableOpacity, 
+  ScrollView, 
+  Platform 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useSettings } from '../context/ConfigContext';
+
+import { useAppStore } from '../store/useAppStore';
 
 export default function SettingsScreen() {
   const { 
-    darkMode, toggleDarkMode, 
-    fontSize, cycleFontSize, getFontSizeLabel 
-  } = useSettings();
+    darkMode, 
+    toggleDarkMode, 
+    fontSize, 
+    cycleFontSize, 
+    getFontSizeLabel 
+  } = useAppStore();
 
   return (
     <View style={[styles.mainContainer, darkMode && styles.containerDark]}>
@@ -56,7 +67,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity 
             style={[styles.optionRow, darkMode && styles.optionRowDark]} 
-            onPress={() => router.push('/privacy-policy')}
+            onPress={() => router.push('/politica')} 
           >
             <View style={styles.optionLeft}>
               <Feather name="shield" size={24} color={darkMode ? "#FFF" : "#4A5565"} />
@@ -67,7 +78,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity 
             style={[styles.optionRow, darkMode && styles.optionRowDark]} 
-            onPress={() => router.push('/terms-of-use')}
+            onPress={() => router.push('/termos-uso')}
           >
             <View style={styles.optionLeft}>
               <Feather name="file-text" size={24} color={darkMode ? "#FFF" : "#4A5565"} />

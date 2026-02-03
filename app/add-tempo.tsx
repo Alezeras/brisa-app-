@@ -14,16 +14,23 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useSettings } from '../context/ConfigContext';
+
+import { useAppStore } from '../store/useAppStore';
 
 const { height } = Dimensions.get('window');
 
 export default function AddTimeScreen() {
-  const { darkMode, fontSize, addManualActivity } = useSettings();
+  const { darkMode, fontSize, addActivity } = useAppStore();
 
   const [name, setName] = useState('');
   
-  const [date, setDate] = useState(new Date().toLocaleDateString('pt-BR')); 
+  const [date, setDate] = useState(() => {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      return `${d}/${m}/${y}`;
+  });
   
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
@@ -40,9 +47,11 @@ export default function AddTimeScreen() {
         const start = new Date(0, 0, 0, startH, startM || 0, 0);
         const end = new Date(0, 0, 0, endH, endM || 0, 0);
 
-        let diffMs = end - start;
+        let diffMs = end.getTime() - start.getTime();
         
-        if (diffMs < 0) diffMs = 0;
+        if (diffMs < 0) {
+            diffMs += 24 * 60 * 60 * 1000;
+        }
 
         const diffSeconds = diffMs / 1000;
         const diffMinutes = diffSeconds / 60;
@@ -69,12 +78,7 @@ export default function AddTimeScreen() {
         return;
     }
 
-    if (!addManualActivity) {
-        Alert.alert("Erro Crítico", "Função de salvar não encontrada. Verifique o SettingsContext.");
-        return;
-    }
-
-    const success = addManualActivity({
+    addActivity({
       title: name,
       date: date, 
       startTime: startTime,
@@ -84,11 +88,9 @@ export default function AddTimeScreen() {
       color: '#193CB8'
     });
 
-    if (success) {
-      setTimeout(() => {
-          router.back();
-      }, 100);
-    }
+    Alert.alert("Sucesso", "Atividade adicionada!", [
+        { text: "OK", onPress: () => router.back() }
+    ]);
   };
 
   return (

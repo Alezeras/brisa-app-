@@ -10,24 +10,25 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useSettings } from '../context/ConfigContext';
+
+import { useAppStore } from '../store/useAppStore';
 
 export default function PrivacyPolicyScreen() {
-  const { darkMode, fontSize } = useSettings();
+  const { darkMode, fontSize } = useAppStore();
 
-  const SectionTitle = ({ children }) => (
+  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <Text style={[styles.sectionTitle, darkMode && styles.textTitleDark, { fontSize: fontSize + 2 }]}>
       {children}
     </Text>
   );
 
-  const Paragraph = ({ children }) => (
+  const Paragraph = ({ children }: { children: React.ReactNode }) => (
     <Text style={[styles.paragraph, darkMode && styles.textDark, { fontSize: fontSize }]}>
       {children}
     </Text>
   );
 
-  const BulletPoint = ({ children }) => (
+  const BulletPoint = ({ children }: { children: React.ReactNode }) => (
     <View style={styles.bulletContainer}>
       <View style={[styles.bullet, darkMode && { backgroundColor: '#FFF' }]} />
       <Text style={[styles.bulletText, darkMode && styles.textDark, { fontSize: fontSize }]}>

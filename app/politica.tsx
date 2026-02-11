@@ -10,9 +10,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-
 import { useAppStore } from '../store/useAppStore';
-
 export default function PrivacyPolicyScreen() {
   const { darkMode, fontSize } = useAppStore();
 
@@ -146,28 +144,23 @@ export default function PrivacyPolicyScreen() {
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F3F4F6' },
   containerDark: { backgroundColor: '#121212' },
-
   header: { backgroundColor: '#1C398E', paddingBottom: 15, paddingTop: Platform.OS === 'android' ? 35 : 10, borderBottomLeftRadius: 16, borderBottomRightRadius: 16 },
   headerDark: { backgroundColor: '#152C70' },
   headerContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 50 },
   backButton: { flexDirection: 'row', alignItems: 'center' },
   backText: { color: 'rgba(255, 255, 255, 0.9)', marginLeft: 5, fontSize: 16 },
   headerTitle: { color: '#FFF', fontSize: 18, fontWeight: '700' },
-
   scrollContent: { padding: 20 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 20, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },
   cardDark: { backgroundColor: '#1E1E1E' },
-
   mainTitle: { fontSize: 22, fontWeight: 'bold', color: '#1C398E', marginBottom: 15, textAlign: 'center' },
   sectionTitle: { fontWeight: '700', color: '#1C398E', marginTop: 20, marginBottom: 8 },
   subTitle: { fontWeight: '600', color: '#2C499E', marginTop: 5, marginBottom: 5 },
   paragraph: { color: '#4A5565', lineHeight: 22, marginBottom: 10, textAlign: 'justify' },
   textTitleDark: { color: '#81A1F8' }, 
   textDark: { color: '#E0E0E0' },
-
   bulletContainer: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 5, paddingLeft: 10 },
   bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4A5565', marginTop: 8, marginRight: 10 },
   bulletText: { flex: 1, color: '#4A5565', lineHeight: 22 },
-
   divider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 20 },
 });

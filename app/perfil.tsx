@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -7,20 +7,60 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Platform,
-  Alert
+  Alert,
+  Image 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
+import * as ImagePicker from 'expo-image-picker'; 
 import { useAppStore } from '../store/useAppStore';
-
 export default function ProfileScreen() {
-  const { darkMode, fontSize, currentUser, logout, activities } = useAppStore();
+  const { 
+    darkMode, 
+    fontSize, 
+    currentUser, 
+    logout, 
+    activities, 
+    getStats,        
+    updateUserProfile 
+  } = useAppStore();
 
-  const totalSeconds = activities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
-  const totalHours = Math.floor(totalSeconds / 3600);
+  const [stats, setStats] = useState({
+    totalHours: '0',
+    projectsCompleted: 0,
+    dailyAverage: '0',
+    totalActivities: 0
+  });
 
-  const dailyAverage = totalHours > 0 ? (totalHours / 1).toFixed(1) : '0';
+  useEffect(() => {
+    const storeStats = getStats ? getStats() : { totalHours: '0', projectsCompleted: 0, dailyAverage: '0' };
+    setStats({
+        totalHours: storeStats.totalHours,
+        projectsCompleted: storeStats.projectsCompleted,
+        dailyAverage: storeStats.dailyAverage,
+        totalActivities: activities.length
+    });
+  }, [activities]);
+
+  const handlePickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      Alert.alert("Permissão necessária", "Precisamos de acesso à galeria para trocar a foto.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled && updateUserProfile) {
+      updateUserProfile(currentUser?.name || 'Usuário', result.assets[0].uri);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -65,10 +105,15 @@ export default function ProfileScreen() {
         <View style={[styles.profileCard, darkMode && styles.cardDark]}>
             <View style={styles.profileRow}>
                 <View style={styles.avatarContainer}>
-                    <View style={styles.avatarCircle}>
-                        <Text style={styles.avatarText}>{getInitials(currentUser?.name)}</Text>
-                    </View>
-                    <TouchableOpacity style={styles.cameraBadge}>
+                    {currentUser?.photo ? (
+                        <Image source={{ uri: currentUser.photo }} style={styles.avatarImage} />
+                    ) : (
+                        <View style={styles.avatarCircle}>
+                            <Text style={styles.avatarText}>{getInitials(currentUser?.name)}</Text>
+                        </View>
+                    )}
+                    
+                    <TouchableOpacity style={styles.cameraBadge} onPress={handlePickImage}>
                         <Feather name="camera" size={12} color="#FFF" />
                     </TouchableOpacity>
                 </View>
@@ -96,25 +141,25 @@ export default function ProfileScreen() {
             <View style={[styles.statCard, darkMode && styles.cardDark]}>
                 <Feather name="clock" size={24} color="#4A5565" style={[styles.statIcon, darkMode && styles.iconDark]} />
                 <Text style={[styles.statLabel, darkMode && styles.textDarkGray]}>Total de Horas</Text>
-                <Text style={[styles.statValue, darkMode && styles.textDark]}>{totalHours}h</Text>
+                <Text style={[styles.statValue, darkMode && styles.textDark]}>{stats.totalHours}h</Text>
             </View>
 
             <View style={[styles.statCard, darkMode && styles.cardDark]}>
                 <Feather name="target" size={24} color="#4A5565" style={[styles.statIcon, darkMode && styles.iconDark]} />
                 <Text style={[styles.statLabel, darkMode && styles.textDarkGray]}>Projetos Ativos</Text>
-                <Text style={[styles.statValue, darkMode && styles.textDark]}>1</Text>
+                <Text style={[styles.statValue, darkMode && styles.textDark]}>{stats.projectsCompleted}</Text>
             </View>
 
             <View style={[styles.statCard, darkMode && styles.cardDark]}>
                 <Feather name="trending-up" size={24} color="#4A5565" style={[styles.statIcon, darkMode && styles.iconDark]} />
                 <Text style={[styles.statLabel, darkMode && styles.textDarkGray]}>Atividades</Text>
-                <Text style={[styles.statValue, darkMode && styles.textDark]}>{activities.length}</Text>
+                <Text style={[styles.statValue, darkMode && styles.textDark]}>{stats.totalActivities}</Text>
             </View>
 
             <View style={[styles.statCard, darkMode && styles.cardDark]}>
                 <Feather name="pie-chart" size={24} color="#4A5565" style={[styles.statIcon, darkMode && styles.iconDark]} />
                 <Text style={[styles.statLabel, darkMode && styles.textDarkGray]}>Média diária</Text>
-                <Text style={[styles.statValue, darkMode && styles.textDark]}>{dailyAverage}h</Text>
+                <Text style={[styles.statValue, darkMode && styles.textDark]}>{stats.dailyAverage}h</Text>
             </View>
 
         </View>
@@ -161,19 +206,17 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F3F4F6' },
-  
   headerBlue: { backgroundColor: '#1E40AF', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, paddingBottom: 20, paddingTop: Platform.OS === 'android' ? 35 : 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 5, elevation: 5, zIndex: 10 },
   headerBlueDark: { backgroundColor: '#152C70' },
   headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, height: 50 },
   backButton: { flexDirection: 'row', alignItems: 'center', position: 'absolute', left: 20, zIndex: 10 },
   backText: { color: '#FFF', marginLeft: 5, fontSize: 16 },
   headerTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', flex: 1, textAlign: 'center', marginLeft: 30 },
-
   scrollContent: { padding: 20 },
-
   profileCard: { backgroundColor: '#FFFFFF', borderRadius: 20, padding: 20, marginBottom: 25, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 3 },
   profileRow: { flexDirection: 'row', alignItems: 'center' },
   avatarContainer: { position: 'relative', marginRight: 15 },
+  avatarImage: { width: 60, height: 60, borderRadius: 30 },
   avatarCircle: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#1E40AF', justifyContent: 'center', alignItems: 'center' },
   avatarText: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
   cameraBadge: { position: 'absolute', bottom: 0, right: 0, backgroundColor: '#1E40AF', width: 24, height: 24, borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFF' },
@@ -182,24 +225,20 @@ const styles = StyleSheet.create({
   userRole: { fontSize: 12, color: '#6B7280', marginTop: 2 },
   editProfileBtn: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10 },
   editBtnText: { fontSize: 12, color: '#4A5565', marginLeft: 5, fontWeight: '500' },
-
   sectionTitle: { fontSize: 16, color: '#4A5565', marginBottom: 15, marginLeft: 5 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
   statCard: { width: '48%', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 15, alignItems: 'center', marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 2, borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)' },
   statIcon: { marginBottom: 10 },
   statLabel: { fontSize: 12, color: '#6B7280', marginBottom: 5, textAlign: 'center' },
   statValue: { fontSize: 16, fontWeight: 'bold', color: '#4A5565' },
-
   menuGroup: { backgroundColor: '#FFFFFF', borderRadius: 12, marginBottom: 25, borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)' },
   menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 18, paddingHorizontal: 20 },
   menuIconBox: { width: 30, alignItems: 'flex-start' },
   menuText: { flex: 1, fontSize: 14, fontWeight: '500', color: '#4A5565' },
   separator: { height: 1, backgroundColor: '#F3F4F6', marginLeft: 20, marginRight: 20 },
-
   logoutButton: { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 15, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)' },
   logoutIconBox: { width: 30, alignItems: 'flex-start' },
   logoutText: { color: '#FF0000', fontWeight: '500' },
-
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E', borderColor: '#333' },
   textDark: { color: '#E0E0E0' },

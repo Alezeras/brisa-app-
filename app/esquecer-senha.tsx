@@ -15,7 +15,6 @@ import {
 import { router } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { z } from 'zod'; 
-
 import { useAppStore } from '../store/useAppStore'; 
 
 const forgotPasswordSchema = z.object({
@@ -30,9 +29,7 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
-
   const { darkMode, fontSize } = useAppStore(); 
-
   async function handleReset() {
     setErrors({}); 
 
@@ -145,29 +142,21 @@ const styles = StyleSheet.create({
   headerButtonContainer: { position: 'absolute', top: 20, left: 25, zIndex: 10 },
   backButton: { width: 40, height: 40, backgroundColor: '#FFFFFF', borderRadius: 20, justifyContent: 'center', alignItems: 'center', elevation: 3 },
   card: { width: 330, paddingVertical: 40, backgroundColor: '#FFFFFF', borderRadius: 20, paddingHorizontal: 20, alignItems: 'center', elevation: 5, marginBottom: 30 },
-  
   logoContainer: { marginBottom: 20, alignItems: 'center', height: 65, justifyContent: 'center' },
-  
   title: { fontSize: 20, fontWeight: 'bold', color: '#4A5565', marginBottom: 10 },
   instruction: { color: '#4A5565', textAlign: 'center', marginBottom: 30, width: 235 },
-  
   formContainer: { width: '100%', alignItems: 'center' },
   label: { width: 235, color: '#4A5565', marginBottom: 6, textAlign: 'left' },
-  
   input: { width: 235, height: 45, backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#193CB8', borderRadius: 12, paddingHorizontal: 15, marginBottom: 5, color: '#333' },
   inputError: { borderColor: '#EF4444' },
   errorText: { width: 235, color: '#EF4444', fontSize: 12, marginBottom: 15, textAlign: 'left' },
-
   actionButton: { width: 235, height: 45, backgroundColor: '#193CB8', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 25, marginTop: 10 },
   buttonContentContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   buttonText: { color: '#FFFFFF', fontWeight: '500' },
-  
   registerLink: { color: '#4A5565' },
   registerBold: { fontWeight: 'bold', color: '#4A5565' },
-  
   footerLink: { position: 'absolute', bottom: 30, alignSelf: 'center' },
   footerText: { color: '#4A5565', fontWeight: '500' },
-
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E' },
   textDark: { color: '#E0E0E0' },

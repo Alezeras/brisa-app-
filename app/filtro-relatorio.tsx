@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
 import { useAppStore } from '../store/useAppStore';
 
 const { width } = Dimensions.get('window');
@@ -186,54 +185,43 @@ export default function FilterReportsScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F3F4F6' },
-  
   headerBlue: { backgroundColor: '#1E40AF', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, paddingBottom: 20, paddingTop: Platform.OS === 'android' ? 35 : 10, zIndex: 10 },
   headerBlueDark: { backgroundColor: '#152C70' },
   headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, height: 50 },
   backButton: { marginRight: 15 },
   headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
-
   scrollContent: { padding: 20, paddingBottom: 150 },
-
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginTop: 10 },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#4A5565', marginLeft: 10 },
-  
   periodGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' },
   periodButton: { width: '48%', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
   periodButtonDark: { backgroundColor: '#1E1E1E', borderColor: '#333' },
   periodButtonActive: { borderColor: '#193CB8' },
   periodText: { color: '#4A5565', fontSize: 14, fontWeight: '500' },
   periodTextActive: { color: '#193CB8', fontWeight: 'bold' },
-
   listCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 15, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
   listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
   listTitle: { fontSize: 12, color: '#6B7280', marginLeft: 8 },
   markAllText: { fontSize: 12, color: '#193CB8', fontWeight: '600' },
-  
   listItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12 },
   itemLeft: { flexDirection: 'row', alignItems: 'center' },
-  
   checkbox: { width: 18, height: 18, borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 4, marginRight: 12, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF' },
   checkboxSelected: { backgroundColor: '#193CB8', borderColor: '#193CB8' },
-  
   colorDot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
   itemName: { fontSize: 14, color: '#4A5565', fontWeight: '500' },
   itemRight: { alignItems: 'flex-end' },
   itemTime: { fontSize: 12, color: '#4A5565', fontWeight: 'bold' },
   itemSessions: { fontSize: 10, color: '#9CA3AF' },
-
   footer: { position: 'absolute', bottom: 0, width: '100%', backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 10, padding: 20 },
   footerDark: { backgroundColor: '#1E1E1E' },
   footerInfo: { flexDirection: 'row', alignItems: 'center', marginBottom: 20, justifyContent: 'center' },
   footerInfoText: { marginLeft: 8, fontSize: 14, fontWeight: '500', color: '#4A5565' },
-  
   footerButtons: { flexDirection: 'row', gap: 15 },
   footerBtn: { flex: 1, height: 45, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
   btnOutline: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB' },
   btnOutlineText: { color: '#4A5565', fontWeight: '600' },
   btnPrimary: { backgroundColor: '#193CB8' },
   btnPrimaryText: { color: '#FFFFFF', fontWeight: '600' },
-
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E', borderColor: '#333' },
   textDark: { color: '#E0E0E0' },

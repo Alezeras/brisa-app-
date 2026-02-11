@@ -13,7 +13,6 @@ import {
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { z } from 'zod'; 
-
 import { useAppStore } from '../store/useAppStore';
 
 const changePasswordSchema = z.object({
@@ -37,13 +36,10 @@ export default function ChangePasswordScreen() {
   const [currentPass, setCurrentPass] = useState('');
   const [newPass, setNewPass] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
-
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
   const [errors, setErrors] = useState<ValidationErrors>({});
-
   const handleSave = () => {
     setErrors({}); 
 
@@ -183,40 +179,31 @@ export default function ChangePasswordScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F3F4F6' },
-  
   headerBlue: { backgroundColor: '#1E40AF', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, paddingBottom: 20, paddingTop: Platform.OS === 'android' ? 35 : 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 5, elevation: 5, zIndex: 10 },
   headerBlueDark: { backgroundColor: '#152C70' },
   headerContent: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, height: 50 },
   backButton: { flexDirection: 'row', alignItems: 'center', position: 'absolute', left: 20, zIndex: 10 },
   backText: { color: '#FFF', marginLeft: 5, fontSize: 16 },
   headerTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', flex: 1, textAlign: 'center', marginLeft: 30 },
-
   scrollContent: { padding: 20 },
-
   inputGroup: { marginBottom: 15 },
   label: { fontSize: 14, color: '#4A5565', marginBottom: 8, marginLeft: 4 },
-  
   inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 12, paddingHorizontal: 15, height: 50 },
   inputContainerDark: { backgroundColor: '#333', borderColor: '#555' },
   inputError: { borderColor: '#EF4444' },
-  
   inputIconLeft: { marginRight: 10 },
   input: { flex: 1, fontSize: 14, color: '#333' },
   errorText: { color: '#EF4444', fontSize: 12, marginLeft: 5, marginTop: 4 },
-
   requirementsCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 20, marginTop: 10, marginBottom: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 2, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' },
   cardDark: { backgroundColor: '#1E1E1E', borderColor: '#333' },
   reqTitle: { fontSize: 14, fontWeight: '500', color: '#4A5565', marginBottom: 10 },
   reqText: { fontSize: 11, color: '#4A5565', lineHeight: 18, marginLeft: 10 },
-
   buttonsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 15 },
   btnOutline: { flex: 1, height: 50, borderRadius: 12, borderWidth: 1, borderColor: '#9CA3AF', backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
   btnOutlineDark: { backgroundColor: 'transparent', borderColor: '#555' },
   btnOutlineText: { color: '#4A5565', fontSize: 14, fontWeight: '500' },
-  
   btnPrimary: { flex: 1, height: 50, borderRadius: 12, backgroundColor: '#193CB8', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
   btnPrimaryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '500' },
-
   containerDark: { backgroundColor: '#121212' },
   textDark: { color: '#E0E0E0' },
   textDarkGray: { color: '#AAAAAA' },

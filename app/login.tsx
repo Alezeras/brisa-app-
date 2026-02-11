@@ -11,12 +11,11 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  Image 
+  Image
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { z } from 'zod'; 
-
 import { useAppStore } from '../store/useAppStore'; 
 
 const loginSchema = z.object({
@@ -35,8 +34,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
-
-  const { darkMode, fontSize, login } = useAppStore();
+  const { darkMode, fontSize, login, lastUserPhoto } = useAppStore();
+  const defaultImage = require('../assets/images/foto-perfil.png'); 
+  const profileImageSource = lastUserPhoto ? { uri: lastUserPhoto } : defaultImage;
 
   async function handleLogin() {
     setErrors({}); 
@@ -45,7 +45,7 @@ export default function LoginScreen() {
 
     if (!result.success) {
       const formattedErrors: ValidationErrors = {};
-      result.error.issues.forEach((err) => {
+      result.error.issues.forEach((err: z.ZodIssue) => {
         if (err.path[0]) {
           formattedErrors[err.path[0] as keyof ValidationErrors] = err.message;
         }
@@ -60,8 +60,8 @@ export default function LoginScreen() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       login(email); 
-      router.replace('/tela');
       
+      router.replace('/tela');
     } catch (error) {
       console.log(error);
       Alert.alert("Erro", "Falha ao fazer login.");
@@ -81,7 +81,7 @@ export default function LoginScreen() {
           <View style={styles.headerButtonContainer}>
             <TouchableOpacity 
               style={styles.settingsButton} 
-              onPress={() => router.push('/config')} 
+              onPress={() => router.push('/config-login')} 
             >
                <Ionicons name="settings-sharp" size={24} color="#193CB8" />
             </TouchableOpacity>
@@ -91,14 +91,14 @@ export default function LoginScreen() {
             
             <View style={styles.clockCircle}>
                <Image 
-                 source={require('../assets/images/foto-perfil.png')} 
+                 source={profileImageSource} 
                  style={styles.profileImage} 
                  resizeMode="cover" 
                />
             </View>
 
             <Text style={[styles.subtitle, darkMode && styles.textDark, { fontSize: fontSize }]}>
-              Registre suas atividades com um toque
+              {lastUserPhoto ? 'Bem-vindo de volta!' : 'Registre suas atividades com um toque'}
             </Text>
 
             <View style={styles.logoContainer}>
@@ -172,7 +172,7 @@ export default function LoginScreen() {
 
           </View>
 
-         <TouchableOpacity 
+          <TouchableOpacity 
             style={styles.footerLink} 
             onPress={() => router.push('/ajuda')} 
           >
@@ -190,36 +190,26 @@ const styles = StyleSheet.create({
   scrollContainer: { flexGrow: 1, minHeight: '100%', alignItems: 'center', justifyContent: 'center', paddingVertical: 20 },
   headerButtonContainer: { position: 'absolute', top: 45, right: 25, zIndex: 10 },
   settingsButton: { width: 40, height: 40, backgroundColor: '#FFFFFF', borderRadius: 20, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 2, elevation: 3 },
-  
   card: { marginTop: 50, width: 330, backgroundColor: '#FFFFFF', borderRadius: 20, paddingVertical: 35, paddingHorizontal: 20, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 6, elevation: 5, marginBottom: 30 },
-  
   clockCircle: { width: 100, height: 100, borderRadius: 50, borderWidth: 4, borderColor: '#193CB8', justifyContent: 'center', alignItems: 'center', marginBottom: 20, overflow: 'hidden', backgroundColor: '#F0F4FF' },
   profileImage: { width: '100%', height: '100%' },
-  
   subtitle: { fontSize: 14, color: '#4A5565', textAlign: 'center', marginBottom: 20, fontFamily: Platform.OS === 'ios' ? 'Arial' : 'Roboto' },
-  
   logoContainer: { marginBottom: 25, alignItems: 'center', justifyContent: 'center', height: 50 },
-  logoImage: { width: 140, height: '100%' }, 
+  logoImage: { width: 140, height: '100%' },
   formContainer: { width: '100%', alignItems: 'center' },
   label: { width: 235, fontSize: 14, color: '#4A5565', marginBottom: 6, textAlign: 'left' },
-  
   input: { width: 235, height: 45, backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#193CB8', borderRadius: 12, paddingHorizontal: 15, marginBottom: 5, color: '#333', fontSize: 16 },
   inputError: { borderColor: '#EF4444', borderWidth: 2 },
   errorText: { width: 235, color: '#EF4444', fontSize: 12, marginBottom: 10, textAlign: 'left' },
-
   passwordContainer: { width: 235, height: 45, backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#193CB8', borderRadius: 12, paddingHorizontal: 15, marginBottom: 5, flexDirection: 'row', alignItems: 'center' },
   inputInside: { flex: 1, height: '100%', color: '#333', fontSize: 16 },
-
   loginButton: { width: 235, height: 45, backgroundColor: '#193CB8', borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginTop: 10, marginBottom: 20 },
   buttonContentContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   loginButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '500' },
-  
   forgotPassword: { fontSize: 14, color: '#4A5565', marginBottom: 10 },
   register: { fontSize: 14, fontWeight: 'bold', color: '#4A5565' },
-  
   footerLink: { position: 'absolute', bottom: 30, alignSelf: 'center' },
   footerText: { fontSize: 14, color: '#4A5565', fontWeight: '500' },
-
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E' },
   textDark: { color: '#E0E0E0' },

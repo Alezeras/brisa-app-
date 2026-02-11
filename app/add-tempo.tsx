@@ -84,7 +84,7 @@ export default function AddTimeScreen() {
       startTime: startTime,
       endTime: endTime,
       duration: realDurationSeconds, 
-      type: 'Manual',
+      type: 'manual',
       color: '#193CB8'
     });
 
@@ -346,25 +346,10 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 14,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnCancelText: {
-    color: '#0A0A0A',
-    fontWeight: '500',
-  },
-  btnSave: {
-    flex: 1,
-    height: 48,
-    backgroundColor: '#193CB8',
-    borderRadius: 14,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnSaveText: {
-    color: '#FFFFFF',
-    fontWeight: '500',
-  },
+    alignItems: 'center', },
+  btnCancelText: { color: '#0A0A0A', fontWeight: '500', },
+  btnSave: { flex: 1, height: 48, backgroundColor: '#193CB8', borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',},
+  btnSaveText: { color: '#FFFFFF',fontWeight: '500',},
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E' },
   textDark: { color: '#E0E0E0' },

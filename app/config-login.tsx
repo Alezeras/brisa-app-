@@ -7,209 +7,112 @@ import {
   SafeAreaView, 
   TouchableOpacity, 
   ScrollView, 
-  Platform,
-  Alert
+  Platform 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
 import { useAppStore } from '../store/useAppStore';
 
-export default function ConfigScreen() {
+export default function SettingsScreen() {
   const { 
     darkMode, 
     toggleDarkMode, 
     fontSize, 
-    currentUser,
-    logout 
+    cycleFontSize, 
+    getFontSizeLabel 
   } = useAppStore();
-
-  const handleLogout = () => {
-    Alert.alert("Sair", "Deseja realmente sair do aplicativo?", [
-        { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Sair", 
-          style: "destructive", 
-          onPress: () => {
-            logout(); 
-            router.replace('/login'); 
-          }
-        }
-    ]);
-  };
 
   return (
     <View style={[styles.mainContainer, darkMode && styles.containerDark]}>
-      
-      <View style={[styles.header, darkMode && styles.headerDark]}>
-        <SafeAreaView>
-           <View style={styles.headerContent}>
-             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-               <Ionicons name="arrow-back" size={24} color="#FFF" />
-             </TouchableOpacity>
-             <Text style={styles.headerTitle}>Configurações</Text>
-             <View style={{width: 24}} /> 
-           </View>
-        </SafeAreaView>
-      </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        
+        <View style={[styles.header, darkMode && styles.headerDark]}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={darkMode ? "#FFF" : "#000"} />
+          </TouchableOpacity>
+          <Text style={[styles.title, darkMode && styles.textDark]}>Configurações</Text>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView contentContainerStyle={styles.content}>
+          
+          <Text style={styles.sectionTitle}>Aparência</Text>
 
-        <View style={[styles.profileSummary, darkMode && styles.cardDark]}>
-            <View style={styles.profileIconCircle}>
-                <Text style={styles.profileInitials}>
-                  {currentUser?.name ? currentUser.name.substring(0,2).toUpperCase() : 'PF'}
-                </Text>
+          <View style={[styles.optionRow, darkMode && styles.optionRowDark]}>
+            <View style={styles.optionLeft}>
+              <Feather name="moon" size={24} color={darkMode ? "#FFF" : "#4A5565"} />
+              <Text style={[styles.optionText, darkMode && styles.textDark, { fontSize: fontSize }]}>Modo Escuro</Text>
             </View>
-            <View>
-                <Text style={[styles.profileName, darkMode && styles.textDark, { fontSize: fontSize }]}>
-                  {currentUser?.name || 'Administrador'}
-                </Text>
-                <Text style={[styles.profileEmail, { fontSize: fontSize - 2 }]}>
-                  {currentUser?.email || 'email@exemplo.com'}
-                </Text>
+            <Switch 
+              value={darkMode} 
+              onValueChange={toggleDarkMode}
+              trackColor={{ false: "#E5E7EB", true: "#193CB8" }}
+              thumbColor={"#FFF"}
+            />
+          </View>
+
+          <TouchableOpacity style={[styles.optionRow, darkMode && styles.optionRowDark]} onPress={cycleFontSize}>
+            <View style={styles.optionLeft}>
+              <Feather name="type" size={24} color={darkMode ? "#FFF" : "#4A5565"} />
+              <Text style={[styles.optionText, darkMode && styles.textDark, { fontSize: fontSize }]}>Tamanho da Fonte</Text>
             </View>
-        </View>
-
-        <Text style={[styles.sectionLabel, darkMode && styles.textDark]}>CONTA</Text>
-
-        <View style={[styles.cardGroup, darkMode && styles.cardDark]}>
-            
-            <TouchableOpacity 
-                style={styles.cardItem} 
-                onPress={() => router.push('/editar-perfil')}
-            >
-                <View style={styles.itemLeft}>
-                    <Feather name="user" size={20} color={darkMode ? "#FFF" : "#4A5565"} />
-                    <View style={styles.textContainer}>
-                        <Text style={[styles.itemTitle, darkMode && styles.textDark, { fontSize: fontSize }]}>Dados Pessoais</Text>
-                        <Text style={styles.itemSubtitle}>Alterar nome, telefone, cargo</Text>
-                    </View>
-                </View>
-                <Feather name="chevron-right" size={20} color="#CEC8D4" />
-            </TouchableOpacity>
-
-            <View style={[styles.divider, darkMode && styles.dividerDark]} />
-
-            <TouchableOpacity 
-                style={styles.cardItem} 
-                onPress={() => router.push('/mudar-senha')}
-            >
-                <View style={styles.itemLeft}>
-                    <Feather name="lock" size={20} color={darkMode ? "#FFF" : "#4A5565"} />
-                    <View style={styles.textContainer}>
-                        <Text style={[styles.itemTitle, darkMode && styles.textDark, { fontSize: fontSize }]}>Segurança</Text>
-                        <Text style={styles.itemSubtitle}>Alterar sua senha de acesso</Text>
-                    </View>
-                </View>
-                <Feather name="chevron-right" size={20} color="#CEC8D4" />
-            </TouchableOpacity>
-        </View>
-
-        <Text style={[styles.sectionLabel, darkMode && styles.textDark]}>APARÊNCIA</Text>
-
-        <View style={[styles.cardGroup, darkMode && styles.cardDark]}>
-            <View style={styles.cardItem}>
-                <View style={styles.itemLeft}>
-                    <Feather name="sun" size={20} color={darkMode ? "#FFF" : "#4A5565"} />
-                    <View style={styles.textContainer}>
-                        <Text style={[styles.itemTitle, darkMode && styles.textDark, { fontSize: fontSize }]}>Modo Escuro</Text>
-                        <Text style={styles.itemSubtitle}>Alterar o tema do aplicativo</Text>
-                    </View>
-                </View>
-                <Switch 
-                    value={darkMode} 
-                    onValueChange={toggleDarkMode}
-                    trackColor={{ false: "#E5E7EB", true: "#1E40AF" }}
-                    thumbColor={"#FFF"}
-                />
+            <View style={styles.valueBadge}>
+              <Text style={styles.valueText}>
+                {getFontSizeLabel ? getFontSizeLabel() : 'Médio'}
+              </Text>
             </View>
-        </View>
+          </TouchableOpacity>
 
-        <Text style={[styles.sectionLabel, darkMode && styles.textDark]}>SUPORTE</Text>
+          <View style={styles.divider} />
 
-        <View style={[styles.cardGroup, darkMode && styles.cardDark]}>
-            <TouchableOpacity 
-                style={styles.cardItem} 
-                onPress={() => router.push('/ajuda')}
-            >
-                <View style={styles.itemLeft}>
-                    <Feather name="help-circle" size={20} color={darkMode ? "#FFF" : "#4A5565"} />
-                    <View style={styles.textContainer}>
-                        <Text style={[styles.itemTitle, darkMode && styles.textDark, { fontSize: fontSize }]}>Ajuda e Suporte</Text>
-                        <Text style={styles.itemSubtitle}>Tire suas dúvidas</Text>
-                    </View>
-                </View>
-                <Feather name="chevron-right" size={20} color="#CEC8D4" />
-            </TouchableOpacity>
-        </View>
+          <Text style={styles.sectionTitle}>Sobre e Legal</Text>
 
-        <TouchableOpacity 
-            style={[styles.logoutCard, darkMode && styles.cardDark]} 
-            onPress={handleLogout}
-        >
-             <View style={styles.itemLeft}>
-                <Feather name="log-out" size={20} color="#FF0000" />
-                <Text style={[styles.logoutText, { fontSize: fontSize }]}>Sair da conta</Text>
-             </View>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.optionRow, darkMode && styles.optionRowDark]} 
+            onPress={() => router.push('/politica')} 
+          >
+            <View style={styles.optionLeft}>
+              <Feather name="shield" size={24} color={darkMode ? "#FFF" : "#4A5565"} />
+              <Text style={[styles.optionText, darkMode && styles.textDark, { fontSize: fontSize }]}>Política de Privacidade</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#99A1AF" />
+          </TouchableOpacity>
 
-        <View style={styles.footerLinks}>
-            <TouchableOpacity onPress={() => router.push('/politica')}>
-                <Text style={styles.footerText}>Política de Privacidade</Text>
-            </TouchableOpacity>
-            <Text style={styles.footerText}> • </Text>
-            <TouchableOpacity onPress={() => router.push('/termos-uso')}>
-                <Text style={styles.footerText}>Termos de Uso</Text>
-            </TouchableOpacity>
-        </View>
+          <TouchableOpacity 
+            style={[styles.optionRow, darkMode && styles.optionRowDark]} 
+            onPress={() => router.push('/termos-uso')}
+          >
+            <View style={styles.optionLeft}>
+              <Feather name="file-text" size={24} color={darkMode ? "#FFF" : "#4A5565"} />
+              <Text style={[styles.optionText, darkMode && styles.textDark, { fontSize: fontSize }]}>Termos de Uso</Text>
+            </View>
+            <Feather name="chevron-right" size={20} color="#99A1AF" />
+          </TouchableOpacity>
 
-        <Text style={styles.versionText}>Versão 1.0.0</Text>
+          <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <Text style={{ color: '#99A1AF', fontSize: 12 }}>Versão 1.0.0 (Brisa)</Text>
+          </View>
 
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: '#F3F4F6' },
+  header: { flexDirection: 'row', alignItems: 'center', padding: 20, paddingTop: Platform.OS === 'android' ? 40 : 10 },
+  headerDark: { backgroundColor: '#121212' },
+  backButton: { marginRight: 15 },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#101828' },
+  content: { padding: 20 },
+  sectionTitle: { fontSize: 14, fontWeight: 'bold', color: '#99A1AF', marginBottom: 10, marginTop: 10, textTransform: 'uppercase' },
+  optionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', padding: 20, borderRadius: 16, marginBottom: 15, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
+  optionLeft: { flexDirection: 'row', alignItems: 'center', gap: 15 },
+  optionText: { color: '#101828', fontWeight: '500' },
+  valueBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  valueText: { color: '#4A5565', fontSize: 12, fontWeight: 'bold' },
+  divider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 10 },
   containerDark: { backgroundColor: '#121212' },
-  
-  header: { backgroundColor: '#1E40AF', paddingBottom: 20, paddingTop: Platform.OS === 'android' ? 40 : 10, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 4 },
-  headerDark: { backgroundColor: '#152C70' },
-  headerContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20 },
-  headerTitle: { fontSize: 20, fontWeight: '500', color: '#FFF' },
-  backButton: { padding: 5 },
-
-  content: { padding: 20, paddingBottom: 50 },
-
-  profileSummary: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', padding: 15, borderRadius: 12, marginBottom: 25, borderWidth: 1, borderColor: 'rgba(203, 206, 212, 0.4)' },
-  profileIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#1E40AF', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  profileInitials: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-  profileName: { fontSize: 16, fontWeight: 'bold', color: '#4A5565' },
-  profileEmail: { color: '#99A1AF' },
-
-  sectionLabel: { fontSize: 14, color: '#4A5565', marginBottom: 8, marginLeft: 4, marginTop: 10 },
-
-  cardGroup: { backgroundColor: '#FFFFFF', borderRadius: 12, marginBottom: 15, overflow: 'hidden' }, 
-  cardDark: { backgroundColor: '#1E1E1E' },
-  
-  cardItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  itemLeft: { flexDirection: 'row', alignItems: 'center', gap: 15 },
-  textContainer: { justifyContent: 'center' },
-  
-  itemTitle: { fontSize: 14, fontWeight: '500', color: '#4A5565' },
-  itemSubtitle: { fontSize: 11, color: '#99A1AF' },
-
-  divider: { height: 1, backgroundColor: '#E5E7EB', marginLeft: 50 },
-  dividerDark: { backgroundColor: '#333' },
-
-  logoutCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginTop: 10, marginBottom: 20 },
-  logoutText: { color: '#FF0000', fontWeight: '500', marginLeft: 15 }, 
-
-  footerLinks: { flexDirection: 'row', justifyContent: 'center', marginTop: 10 },
-  footerText: { color: '#99A1AF', fontSize: 12 },
-  versionText: { textAlign: 'center', color: '#ccc', fontSize: 10, marginTop: 10 },
-
   textDark: { color: '#E0E0E0' },
+  optionRowDark: { backgroundColor: '#1E1E1E' }
 });

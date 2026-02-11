@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -8,8 +8,9 @@ import {
   TouchableOpacity, 
   Platform, 
   Modal, 
+  StatusBar
 } from 'react-native';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
 
 import { useAppStore } from '../store/useAppStore';
@@ -22,6 +23,7 @@ const formatTime = (totalSeconds: number) => {
 };
 
 export default function Dashboard() {
+  const router = useRouter();
   const { 
     darkMode, 
     fontSize, 
@@ -30,13 +32,18 @@ export default function Dashboard() {
     timerSeconds, 
     startTimer,
     stopTimer,
-    logout 
+    logout,
+    fetchClients 
   } = useAppStore();
   
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const totalSeconds = activities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
+  const recentActivities = activities.filter(a => a.type === 'timer' || a.type === 'manual');
+  const totalSeconds = recentActivities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
   const handleToggleTimer = () => {
     if (isRunning) {
       stopTimer();
@@ -49,12 +56,13 @@ export default function Dashboard() {
     setMenuVisible(false);
     logout(); 
     setTimeout(() => {
-        router.replace('/login');
+        router.replace('/login'); 
     }, 100);
   };
 
   return (
     <SafeAreaView style={[styles.container, darkMode && styles.containerDark]}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       
       <Modal
         animationType="fade"
@@ -106,12 +114,12 @@ export default function Dashboard() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {activities.length === 0 ? (
+        {recentActivities.length === 0 ? (
             <View style={{alignItems: 'center', marginTop: 50}}>
-                <Text style={{color: '#9CA3AF', fontSize: 14}}>Nenhuma atividade registrada.</Text>
+                <Text style={{color: '#9CA3AF', fontSize: 14}}>Nenhuma atividade registrada hoje.</Text>
             </View>
         ) : (
-            activities.map((item) => (
+            recentActivities.map((item) => (
             <View key={item.id} style={[styles.activityCard, darkMode && styles.cardDark]}>
                 <View style={styles.cardHeaderRow}>
                 <Text style={[styles.cardDate, darkMode && styles.textDark, { fontSize: fontSize - 2 }]}>
@@ -137,10 +145,10 @@ export default function Dashboard() {
 
                 <View style={styles.rightActions}>
                     <TouchableOpacity style={styles.smallPlayButton}>
-                    <Ionicons name="play" size={12} color={darkMode ? "#FFF" : "#000"} />
+                      <Ionicons name="play" size={12} color={darkMode ? "#FFF" : "#000"} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.optionsButton}>
-                    <MaterialIcons name="more-vert" size={20} color={darkMode ? "#FFF" : "#000"} />
+                      <MaterialIcons name="more-vert" size={20} color={darkMode ? "#FFF" : "#000"} />
                     </TouchableOpacity>
                 </View>
                 </View>

@@ -10,9 +10,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
 import { useAppStore } from '../store/useAppStore';
-
 export default function HelpScreen() {
   const { darkMode, fontSize } = useAppStore();
 
@@ -116,32 +114,22 @@ export default function HelpScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F4F6' },
-  
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 20, marginTop: Platform.OS === 'android' ? 25 : 0 },
   backButton: { marginRight: 15 },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#333' },
-
   scrollContainer: { flexGrow: 1, alignItems: 'center', paddingBottom: 40 },
-  
   mainCard: { width: 330, backgroundColor: '#FFFFFF', borderRadius: 20, paddingVertical: 30, paddingHorizontal: 20, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 6, elevation: 5, marginTop: 10 },
-  
   bigIconContainer: { marginBottom: 15 },
   subtitle: { color: '#4A5565', marginBottom: 25, fontWeight: '500', textAlign: 'center' },
-  
   helpCard: { width: '100%', backgroundColor: '#F9FAFB', borderRadius: 12, padding: 15, marginBottom: 20 },
   helpCardDark: { backgroundColor: '#2C2C2C' },
-  
   cardHeader: { flexDirection: 'row', marginBottom: 15 },
-  
   iconBox: { width: 30, height: 30, backgroundColor: '#F3F4F6', borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   cardTexts: { flex: 1 },
-  
   cardTitle: { color: '#4A5565', fontWeight: 'bold', marginBottom: 4 },
   cardDescription: { fontSize: 12, color: '#6B7280', lineHeight: 16 },
-  
   actionButton: { backgroundColor: '#193CB8', borderRadius: 12, height: 35, justifyContent: 'center', alignItems: 'center', width: '100%' },
   actionButtonText: { color: '#FFFFFF', fontWeight: '500' },
-
   containerDark: { backgroundColor: '#121212' },
   cardDark: { backgroundColor: '#1E1E1E' },
   textDark: { color: '#E0E0E0' },

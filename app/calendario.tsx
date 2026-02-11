@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { 
-  View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions, Platform 
+  View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform 
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-
 import { useAppStore } from '../store/useAppStore';
 
 interface DayObject {
@@ -17,9 +16,9 @@ interface DayObject {
 }
 
 export default function CalendarScreen() {
-  const { darkMode, activities, timerSeconds, activities: allActivities } = useAppStore();
+  const { darkMode, activities } = useAppStore();
   
-  const getTotalSeconds = () => allActivities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+  const getTotalSeconds = () => activities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
   
   const formatTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -47,7 +46,6 @@ export default function CalendarScreen() {
     const firstDayOfWeek = new Date(year, month, 1).getDay();
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
     const lastDayOfPrevMonth = new Date(year, month, 0).getDate();
-
     const daysArray: DayObject[] = [];
 
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
@@ -118,7 +116,8 @@ export default function CalendarScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.newBtn} onPress={() => router.push('/add-tempo')}>
+                
+                <TouchableOpacity style={styles.newBtn} onPress={() => router.push('/nova-atividade')}>
                     <Feather name="plus" size={16} color="#FFF" />
                     <Text style={styles.newBtnText}>Nova</Text>
                 </TouchableOpacity>
